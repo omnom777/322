@@ -1,7 +1,2 @@
 python-telegram-bot==20.7
 APScheduler==3.10.4
-cachetools==5.3.2
-pytz==2023.3.post1
-tornado==6.4
-certifi==2024.2.2
-tzlocal==5.2
