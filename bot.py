@@ -13,7 +13,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Токен бота (получите у @BotFather)
-TOKEN = 'ВАШ_ТОКЕН_СЮДА'
+TOKEN = '8456301716:AAE3pCEtMfdyCLFkFjCvR2Y0csIMhvrwLUs'
 
 # Вопросы для викторины
 QUIZ_QUESTIONS = [
@@ -198,3 +198,4 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Критическая ошибка: {e}")
         sys.exit(1)
+
