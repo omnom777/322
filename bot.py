@@ -1,7 +1,9 @@
 import logging
+import asyncio
 from telegram import Update, Poll
 from telegram.ext import Application, CommandHandler, PollAnswerHandler, ContextTypes
 import os
+import sys
 
 # Включаем логирование
 logging.basicConfig(
@@ -11,7 +13,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Токен бота (получите у @BotFather)
-TOKEN = '8456301716:AAE3pCEtMfdyCLFkFjCvR2Y0csIMhvrwLUs'
+TOKEN = 'ВАШ_ТОКЕН_СЮДА'
 
 # Вопросы для викторины
 QUIZ_QUESTIONS = [
@@ -104,7 +106,6 @@ async def handle_poll_answer(update: Update, context: ContextTypes.DEFAULT_TYPE)
     """Обрабатывает ответы на опросы."""
     answer = update.poll_answer
     user_id = answer.user.id
-    poll_id = answer.poll_id
     
     # Получаем сессию пользователя
     session = user_sessions.get(user_id)
@@ -112,10 +113,7 @@ async def handle_poll_answer(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
     
     # Получаем информацию об опросе
-    poll = await context.bot.stop_poll(
-        chat_id=update.effective_chat.id,
-        message_id=session['message_id']
-    )
+    poll = answer.poll
     
     # Проверяем правильность ответа
     selected_option = answer.option_ids[0]
@@ -135,9 +133,6 @@ async def show_result(update: Update, context: ContextTypes.DEFAULT_TYPE, user_i
     """Показывает итоговый результат."""
     session = user_sessions[user_id]
     
-    # Очищаем сессию
-    del user_sessions[user_id]
-    
     # Формируем сообщение с результатом
     result_text = (
         f"🎉 Викторина завершена!\n\n"
@@ -154,6 +149,9 @@ async def show_result(update: Update, context: ContextTypes.DEFAULT_TYPE, user_i
         result_text += "👌 Хорошо! Но есть куда расти"
     else:
         result_text += "📚 Попробуй еще раз, чтобы улучшить результат!"
+    
+    # Очищаем сессию
+    del user_sessions[user_id]
     
     await context.bot.send_message(chat_id=chat_id, text=result_text)
     
@@ -175,6 +173,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     """Запускает бота."""
+    print("Бот запускается...")
+    
     # Создаем приложение
     application = Application.builder().token(TOKEN).build()
     
@@ -187,8 +187,14 @@ def main():
     application.add_handler(PollAnswerHandler(handle_poll_answer))
     
     # Запускаем бота
-    print("Бот запущен...")
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    print("Бот запущен и готов к работе!")
+    
+    # Используем простой run_polling без параметров
+    application.run_polling()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"Критическая ошибка: {e}")
+        sys.exit(1)
